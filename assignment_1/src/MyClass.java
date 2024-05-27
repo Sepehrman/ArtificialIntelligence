@@ -16,12 +16,31 @@ public class MyClass {
         // Assignment 1: Model-based Agent Function
         // ----------------
 
-        
+        char[][] rooms = {
+                {'A', 'B'},
+                {'C', 'D'}};
+
+        if (A_status && B_status && C_status && D_status) {
+            System.out.println("\nAction - Next Location = " + current_location);
+            return;
+        }
+
+        //  vaccum cleaner only moves horiz or vertically
+
+        // horiz moves have highest priority over vertical
 
 
+        // If all squares clean, vacuum stays in current position
+
+        // If the current loc is not clean, vacum stays in current loc. to cleanup
+
+        // vacuum cleaner moves one square at a time
+
+        System.out.println("\nAction - Next Location = " + current_location);
+    }
 
 
+    public void processCleaning() {
 
-        System.out.println("\nAction - Next Location = ");
     }
 }
