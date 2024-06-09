@@ -1,6 +1,5 @@
 public class MyClass {
 
-    private static final int MAX_MOVE = 1;
     private static final int MAX_INDEX = 2;
 
     private static int horizIndex = 0;
@@ -8,7 +7,6 @@ public class MyClass {
 
     public static void main(String[] args) {
         char current_location = args[0].charAt(0);
-        // state: true -> clean, false -> not clean
         boolean A_status = Boolean.parseBoolean(args[1]);
         boolean B_status = Boolean.parseBoolean(args[2]);
         boolean C_status = Boolean.parseBoolean(args[3]);
@@ -20,34 +18,42 @@ public class MyClass {
                 "Square C status = " + C_status + "\n" +
                 "Square D status = " + D_status + "\n");
 
-        char[][] rooms = {
+        char[][] perceptRooms = {
                 {'A', 'B'},
                 {'C', 'D'}
         };
-        convertChartToIndex(current_location);
+
+        boolean[][] perceptStatus = {
+          {A_status, B_status},
+          {C_status, D_status}
+        };
 
         if (A_status && B_status && C_status && D_status) {
             System.out.println("\nAction - Next Location = " + current_location);
             return;
         }
 
-        // TODO: find next neighbour in horizontal and vertical positions
+        convertCharToIndex(current_location);
 
-        // Incomplete while loop - placeholder for your logic
-        // while () {
-        // }
+        if (perceptStatus[horizIndex][vertIndex]) {
+            System.out.println("Current Room is clean " + current_location);
+        } else {
+            System.out.println("Current Room is dirty " + current_location);
+            // Clean the current room
+            perceptStatus[horizIndex][vertIndex] = true;
+        }
 
-        // Do 1 single move
-        // vacuum cleaner only moves horizontally or vertically
-        // horizontal moves have highest priority over vertical
-        // If all squares clean, vacuum stays in current position
-        // If the current location is not clean, vacuum stays in current location to clean up
-        // vacuum cleaner moves one square at a time
-
-        System.out.println("\nAction - Next Location = " + current_location);
+        char nextLocation = getNextLocation(perceptRooms, perceptStatus, current_location);
+        System.out.println("\nAction - Next Location = " + nextLocation);
     }
 
-    public static void convertChartToIndex(char curr_position) {
+    public static char getNextLocation(char[][] rooms, boolean[][] statuses, char currentLocation) {
+        // Implement logic to find the next location based on the current percept
+        // Example: move to the next horizontal neighbor if available, otherwise move to the next vertical neighbor
+        return;
+    }
+
+    public static void convertCharToIndex(char curr_position) {
         switch (curr_position) {
             case 'A':
                 horizIndex = 0;
@@ -66,18 +72,5 @@ public class MyClass {
                 vertIndex = 1;
                 break;
         }
-    }
-
-    public void findHorizNeighbour(char input) {
-        // Implementation needed
-    }
-
-    private char translatePositionToChar() {
-        // Implementation needed
-        return ' ';
-    }
-
-    public void processCleaning() {
-        // Implementation needed
     }
 }
