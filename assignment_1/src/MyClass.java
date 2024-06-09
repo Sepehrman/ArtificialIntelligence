@@ -46,14 +46,12 @@ public class MyClass {
     }
     
     public static Object[] findHorizontalNeighbour(char[][] rooms, boolean[][] statuses, int horizIndex, int vertIndex) {
-        char horizontalRoom = rooms[horizIndex][(vertIndex + 1) % rooms[0].length];
+        char horizontalRoom = rooms[horizIndex][(vertIndex + 1) % rooms.length];
         boolean isClean = statuses[horizIndex][(vertIndex + 1) % rooms.length];
-        System.out.println("horiz neighbor: " + horizontalRoom + ": " + isClean);
-        
+
         if (isClean) {
-            horizontalRoom = rooms[(horizIndex + 1) % rooms[0].length][vertIndex];
+            horizontalRoom = rooms[(horizIndex + 1) % rooms.length][vertIndex];
             isClean = statuses[(horizIndex + 1) % rooms.length][vertIndex];
-            System.out.println("vertical neighbor: " + horizontalRoom + ": " + isClean);
         }
 
         return new Object[]{horizontalRoom, isClean};
