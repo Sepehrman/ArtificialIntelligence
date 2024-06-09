@@ -1,4 +1,4 @@
-public class MyClass {
+public class Main {
 
     private static final int MAX_INDEX = 2;
 
@@ -46,11 +46,8 @@ public class MyClass {
     }
     
     public static Object[] findHorizontalNeighbour(char[][] rooms, boolean[][] statuses, int horizIndex, int vertIndex) {
-        System.out.println("index " + horizIndex + ", " + vertIndex);
-        
         char horizontalRoom = rooms[horizIndex][(vertIndex + 1) % rooms.length];
         boolean isClean = statuses[horizIndex][(vertIndex + 1) % rooms.length];
-        System.out.println("Location " + horizontalRoom);
         if (isClean) {
             horizontalRoom = rooms[(horizIndex + 1) % rooms.length][vertIndex];
             isClean = statuses[(horizIndex + 1) % rooms.length][vertIndex];
