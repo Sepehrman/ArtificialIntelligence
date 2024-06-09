@@ -36,21 +36,38 @@ public class MyClass {
         convertCharToIndex(current_location);
 
         if (perceptStatus[horizIndex][vertIndex]) {
-            System.out.println("Current Room is clean " + current_location);
         } else {
-            System.out.println("Current Room is dirty " + current_location);
             // Clean the current room
-            perceptStatus[horizIndex][vertIndex] = true;
+            return;
         }
 
         char nextLocation = getNextLocation(perceptRooms, perceptStatus, current_location);
         System.out.println("\nAction - Next Location = " + nextLocation);
     }
+    
+    public static Object[] findHorizontalNeighbour(char[][] rooms, boolean[][] statuses, int horizIndex, int vertIndex) {
+        char horizontalRoom = rooms[horizIndex][(vertIndex + 1) % rooms[0].length];
+        boolean isClean = statuses[horizIndex][(vertIndex + 1) % rooms.length];
+        System.out.println("horiz neighbor: " + horizontalRoom + ": " + isClean);
+        
+        if (isClean) {
+            horizontalRoom = rooms[(horizIndex + 1) % rooms[0].length][vertIndex];
+            isClean = statuses[(horizIndex + 1) % rooms.length][vertIndex];
+            System.out.println("vertical neighbor: " + horizontalRoom + ": " + isClean);
+        }
+
+        return new Object[]{horizontalRoom, isClean};
+    }
 
     public static char getNextLocation(char[][] rooms, boolean[][] statuses, char currentLocation) {
+            
+        Object[] horizontalNeighbour = findHorizontalNeighbour(rooms, statuses, horizIndex, vertIndex);
+        char nextRoom = (char) horizontalNeighbour[0];
+        boolean nextStatus = (boolean) horizontalNeighbour[1];
+            
         // Implement logic to find the next location based on the current percept
         // Example: move to the next horizontal neighbor if available, otherwise move to the next vertical neighbor
-        return;
+        return nextRoom;
     }
 
     public static void convertCharToIndex(char curr_position) {
