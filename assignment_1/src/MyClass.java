@@ -1,4 +1,4 @@
-public class Main {
+public class MyClass {
 
     private static final int MAX_INDEX = 2;
 
@@ -24,8 +24,8 @@ public class Main {
         };
 
         boolean[][] perceptStatus = {
-          {A_status, B_status},
-          {C_status, D_status}
+                {A_status, B_status},
+                {C_status, D_status}
         };
 
         if (A_status && B_status && C_status && D_status) {
@@ -33,21 +33,23 @@ public class Main {
             return;
         }
 
-        convertCharToIndex(current_location);
+        getIndexFromChar(current_location);
 
-        if (perceptStatus[horizIndex][vertIndex]) {
-        } else {
-            // Clean the current room
+        if (perceptRooms[horizIndex][vertIndex] == current_location) {
+            System.out.println("\nAction - Next Location = " + current_location);
             return;
         }
 
-        char nextLocation = getNextLocation(perceptRooms, perceptStatus, current_location);
+        char nextLocation = findAction(perceptRooms, perceptStatus, current_location);
         System.out.println("\nAction - Next Location = " + nextLocation);
     }
-    
-    public static Object[] findHorizontalNeighbour(char[][] rooms, boolean[][] statuses, int horizIndex, int vertIndex) {
+
+    public static Object[] findNextDirtyRoom(char[][] rooms, boolean[][] statuses, int horizIndex, int vertIndex) {
+
         char horizontalRoom = rooms[horizIndex][(vertIndex + 1) % rooms.length];
         boolean isClean = statuses[horizIndex][(vertIndex + 1) % rooms.length];
+
+        // If the horizontal
         if (isClean) {
             horizontalRoom = rooms[(horizIndex + 1) % rooms.length][vertIndex];
             isClean = statuses[(horizIndex + 1) % rooms.length][vertIndex];
@@ -56,18 +58,18 @@ public class Main {
         return new Object[]{horizontalRoom, isClean};
     }
 
-    public static char getNextLocation(char[][] rooms, boolean[][] statuses, char currentLocation) {
-            
-        Object[] horizontalNeighbour = findHorizontalNeighbour(rooms, statuses, horizIndex, vertIndex);
+    public static char findAction(char[][] rooms, boolean[][] statuses, char currentLocation) {
+
+        Object[] horizontalNeighbour = findNextDirtyRoom(rooms, statuses, horizIndex, vertIndex);
         char nextRoom = (char) horizontalNeighbour[0];
         boolean nextStatus = (boolean) horizontalNeighbour[1];
-            
+
         // Implement logic to find the next location based on the current percept
         // Example: move to the next horizontal neighbor if available, otherwise move to the next vertical neighbor
         return nextRoom;
     }
 
-    public static void convertCharToIndex(char curr_position) {
+    public static void getIndexFromChar(char curr_position) {
         switch (curr_position) {
             case 'A':
                 horizIndex = 0;
