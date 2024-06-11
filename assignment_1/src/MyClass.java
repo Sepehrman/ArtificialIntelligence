@@ -23,11 +23,12 @@ public class MyClass {
                 {'C', 'D'}
         };
 
-        boolean[][] perceptStatus = {
+        boolean[][] perceptRoomStatus = {
                 {A_status, B_status},
                 {C_status, D_status}
         };
 
+        // If all
         if (A_status && B_status && C_status && D_status) {
             System.out.println("\nAction - Next Location = " + current_location);
             return;
@@ -35,13 +36,14 @@ public class MyClass {
 
         getIndexFromChar(current_location);
 
-        if (perceptRooms[horizIndex][vertIndex] == current_location) {
-            System.out.println("\nAction - Next Location = " + current_location);
+        // If current room is clean, stay and clean current location then exit
+        if (perceptRooms[horizIndex][vertIndex] == current_location && !perceptRoomStatus[horizIndex][vertIndex]) {
+            System.out.println("Action - Next Location = " + current_location);
             return;
         }
 
-        char nextLocation = findAction(perceptRooms, perceptStatus, current_location);
-        System.out.println("\nAction - Next Location = " + nextLocation);
+        char nextLocation = findAction(perceptRooms, perceptRoomStatus, current_location);
+        System.out.println("Action - Next Location = " + nextLocation);
     }
 
     public static Object[] findNextDirtyRoom(char[][] rooms, boolean[][] statuses, int horizIndex, int vertIndex) {
@@ -60,13 +62,9 @@ public class MyClass {
 
     public static char findAction(char[][] rooms, boolean[][] statuses, char currentLocation) {
 
+        // finds the next location based the current percept
         Object[] horizontalNeighbour = findNextDirtyRoom(rooms, statuses, horizIndex, vertIndex);
-        char nextRoom = (char) horizontalNeighbour[0];
-        boolean nextStatus = (boolean) horizontalNeighbour[1];
-
-        // Implement logic to find the next location based on the current percept
-        // Example: move to the next horizontal neighbor if available, otherwise move to the next vertical neighbor
-        return nextRoom;
+        return (char) horizontalNeighbour[0];
     }
 
     public static void getIndexFromChar(char curr_position) {
