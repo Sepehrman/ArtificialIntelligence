@@ -5,7 +5,7 @@
  * This was achieved by keeping track of the internal state of each room and making decisions accordingly based on the
  * Horizontal and Vertical movement of the vacuum agent within a 2x2 environment.
  */
-public class assignment_1 {
+public class Assignment1 {
 
     private static int horizIndex = 0;
     private static int vertIndex = 0;
