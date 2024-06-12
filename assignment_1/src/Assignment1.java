@@ -6,7 +6,7 @@
  * This was achieved by keeping track of the internal state of each room and making decisions accordingly based on the
  * Horizontal and Vertical movement of the vacuum agent within a 2x2 environment.
  */
-public class MyClass {
+public class Assignment1 {
 
     private static final int MAX_INDEX = 2;
 
@@ -50,17 +50,18 @@ public class MyClass {
 
         // If current room is clean, stay and clean current location then exit
         if (environment[horizIndex][vertIndex] == current_location && !roomStates[horizIndex][vertIndex]) {
-            System.out.println("Action - Next Location = " + current_location);
+            System.out.println("\nAction - Next Location = " + current_location);
             return;
         }
 
         // Finds the relevant action provided there is a dirty room in neighbouring rooms
         char action = findAction(environment);
-        System.out.println("Action - Next Location = " + action);
+        System.out.println("\nAction - Next Location = " + action);
     }
 
     /**
-     * Finds the appropriate action given the room and room status percepts
+     * Finds the appropriate action given the room and room status percepts. With the agent first moving horizontally
+     * Then proceeding to move vertically if the neighbouring state is clean.
      * @param rooms a 2x2 Matrix of chars representing the rooms
      * @return an Action - Location of the agent.
      */
@@ -76,7 +77,6 @@ public class MyClass {
 
         return roomDirection;
     }
-
 
 
     /**
