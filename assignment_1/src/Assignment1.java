@@ -45,7 +45,7 @@ public class Assignment1 {
             return;
         }
 
-        // Sets matrix index values given a room lettter
+        // Sets matrix index values given a room letter
         getIndexFromChar(current_location);
 
         // If current room is clean, stay and clean current location then exit
