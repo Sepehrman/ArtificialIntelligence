@@ -17,5 +17,8 @@ public class Main {
 
         int[] heuristic_vector= {5,7,3,4,6,8,5,0,0,0};
 
+        // Identify the Goal States and save them in a new vector
+        // Write a program to implement the A * searrch
+        // Print the cheapest path, the goal state and the number of cycles
     }
 }
