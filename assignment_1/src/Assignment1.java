@@ -1,14 +1,11 @@
 /**
  * @author Sepehr Mansouri
  * Artificial Intelligence - Assignment 1
- *
  * The purpose of this assignment was to develop a Model-Based Reflex Agent for a vacuum cleaner.
  * This was achieved by keeping track of the internal state of each room and making decisions accordingly based on the
  * Horizontal and Vertical movement of the vacuum agent within a 2x2 environment.
  */
 public class Assignment1 {
-
-    private static final int MAX_INDEX = 2;
 
     private static int horizIndex = 0;
     private static int vertIndex = 0;
@@ -67,10 +64,12 @@ public class Assignment1 {
      */
     public static char findAction(char[][] rooms) {
 
+        // Circular horizontal movement to prevent out of bounds index
         char roomDirection = rooms[horizIndex][(vertIndex + 1) % rooms.length];
         boolean isClean = roomStates[horizIndex][(vertIndex + 1) % rooms.length];
 
         // If the horizontal neighbour is clean, move to vertical position.
+        // Circular vertical movement to prevent out of bounds index
         if (isClean) {
             roomDirection = rooms[(horizIndex + 1) % rooms.length][vertIndex];
         }
