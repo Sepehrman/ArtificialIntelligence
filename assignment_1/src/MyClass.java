@@ -5,7 +5,7 @@
  * This was achieved by keeping track of the internal state of each room and making decisions accordingly based on the
  * Horizontal and Vertical movement of the vacuum agent within a 2x2 environment.
  */
-public class Assignment1 {
+public class MyClass {
 
     private static int horizIndex = 0;
     private static int vertIndex = 0;
@@ -42,7 +42,7 @@ public class Assignment1 {
             return;
         }
 
-        // Sets matrix index values given a room letter
+        // Sets matrix index values given a letter
         getIndexFromChar(current_location);
 
         // If current room is clean, stay and clean current location then exit
