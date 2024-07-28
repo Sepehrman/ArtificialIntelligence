@@ -65,19 +65,21 @@ class Graph {
 }
 
 class AStar {
-    static class NodeCost implements Comparable<NodeCost> {
+    static class NodeRecord implements Comparable<NodeRecord> {
         Node node;
-        int cost;
+        NodeRecord parent;
+        int costSoFar;
         int estimatedTotalCost;
 
-        NodeCost(Node node, int cost, int estimatedTotalCost) {
+        NodeRecord(Node node, NodeRecord parent, int costSoFar, int estimatedTotalCost) {
             this.node = node;
-            this.cost = cost;
+            this.parent = parent;
+            this.costSoFar = costSoFar;
             this.estimatedTotalCost = estimatedTotalCost;
         }
 
         @Override
-        public int compareTo(NodeCost other) {
+        public int compareTo(NodeRecord other) {
             return Integer.compare(this.estimatedTotalCost, other.estimatedTotalCost);
         }
     }
@@ -86,93 +88,83 @@ class AStar {
         Node start = graph.getNode(startName);
         Node goal = graph.getNode(goalName);
 
-        if (start == null || goal == null) {
-            System.out.println("Start or Goal node not found.");
-            return Collections.emptyList();
-        }
+        PriorityQueue<NodeRecord> openList = new PriorityQueue<>();
+        Map<String, NodeRecord> openMap = new HashMap<>();
+        Map<String, NodeRecord> closedMap = new HashMap<>();
 
-        PriorityQueue<NodeCost> openSet = new PriorityQueue<>();
-        Map<Node, Node> cameFrom = new HashMap<>();
-        Map<Node, Integer> gScore = new HashMap<>();
-        Set<Node> closedSet = new HashSet<>();
+        NodeRecord startRecord = new NodeRecord(start, null, 0, start.heuristic);
+        openList.add(startRecord);
+        openMap.put(start.name, startRecord);
 
-        openSet.add(new NodeCost(start, 0, start.heuristic));
-        gScore.put(start, 0);
+        while (!openList.isEmpty()) {
+            NodeRecord current = openList.poll();
+            openMap.remove(current.node.name);
 
-        while (!openSet.isEmpty()) {
-            NodeCost current = openSet.poll();
-            Node currentNode = current.node;
-
-            System.out.println("Exploring node " + currentNode.name + " with current cost " + current.cost + " and heuristic " + currentNode.heuristic);
-
-            if (currentNode.equals(goal)) {
-                return reconstructPath(cameFrom, currentNode);
+            if (current.node.name.equals(goal.name)) {
+                return reconstructPath(current);
             }
 
-            closedSet.add(currentNode);
+            for (Edge edge : current.node.edges) {
+                Node target = edge.target;
+                int costSoFar = current.costSoFar + edge.cost;
+                int estimatedTotalCost = costSoFar + target.heuristic;
 
-            for (Edge edge : currentNode.edges) {
-                Node neighbor = edge.target;
-                int tentativeGScore = gScore.getOrDefault(currentNode, Integer.MAX_VALUE) + edge.cost;
-
-                if (closedSet.contains(neighbor)) {
+                if (closedMap.containsKey(target.name)) {
                     continue;
                 }
 
-                if (tentativeGScore < gScore.getOrDefault(neighbor, Integer.MAX_VALUE)) {
-                    cameFrom.put(neighbor, currentNode);
-                    gScore.put(neighbor, tentativeGScore);
-                    int fScore = tentativeGScore + neighbor.heuristic;
-                    openSet.add(new NodeCost(neighbor, tentativeGScore, fScore));
-
-                    System.out.println("Adding node " + neighbor.name + " to open set with cost " + tentativeGScore + " and fScore " + fScore);
+                NodeRecord targetRecord = openMap.get(target.name);
+                if (targetRecord == null) {
+                    targetRecord = new NodeRecord(target, current, costSoFar, estimatedTotalCost);
+                    openList.add(targetRecord);
+                    openMap.put(target.name, targetRecord);
+                } else if (costSoFar < targetRecord.costSoFar) {
+                    targetRecord.parent = current;
+                    targetRecord.costSoFar = costSoFar;
+                    targetRecord.estimatedTotalCost = estimatedTotalCost;
+                    openList.remove(targetRecord);
+                    openList.add(targetRecord);
                 }
             }
+
+            closedMap.put(current.node.name, current);
         }
 
-        return Collections.emptyList(); // Path not found
+        return null; // No path found
     }
 
-    private static List<String> reconstructPath(Map<Node, Node> cameFrom, Node currentNode) {
-        List<String> path = new LinkedList<>();
-        while (currentNode != null) {
-            path.add(0, currentNode.name);
-            currentNode = cameFrom.get(currentNode);
+    private static List<String> reconstructPath(NodeRecord goalRecord) {
+        List<String> path = new ArrayList<>();
+        NodeRecord current = goalRecord;
+
+        while (current != null) {
+            path.add(current.node.name);
+            current = current.parent;
         }
+
+        Collections.reverse(path);
         return path;
     }
 }
 
 public class Main {
-
-
     public final static String[] STATES = {"A", "B", "C", "D", "E", "H", "J", "G1", "G2", "G3"};
 
-
     public static void main(String[] args) {
-
-
         int[][] cost_matrix = {
-                {0,0,0,6,1,0,0,0,0,0},
-                {5,0,2,0,0,0,0,0,0,0},
-                {9,3,0,0,0,0,0,0,0,0},
-                {0,0,1,0,2,0,0,0,0,0},
-                {6,0,0,0,0,2,0,0,0,0},
-                {0,0,0,7,0,0,0,0,0,0},
-                {0,0,0,0,2,0,0,0,0,0},
-                {0,9,0,0,0,0,0,0,0,0},
-                {0,0,0,5,0,0,0,0,0,0},
-                {0,0,0,0,0,8,7,0,0,0}
+                {0, 0, 0, 6, 1, 0, 0, 0, 0, 0},
+                {5, 0, 2, 0, 0, 0, 0, 0, 0, 0},
+                {9, 3, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 1, 0, 2, 0, 0, 0, 0, 0},
+                {6, 0, 0, 0, 0, 2, 0, 0, 0, 0},
+                {0, 0, 0, 7, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
+                {0, 9, 0, 0, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 5, 0, 0, 0, 0, 0, 0},
+                {0, 0, 0, 0, 0, 8, 7, 0, 0, 0}
         };
 
-        int[] heuristic_vector= {5,7,3,4,6,8,5,0,0,0};
-        List<Integer> goalStates = new ArrayList<Integer>();
-        for (int i = 0; i < heuristic_vector.length; i++) {
-            if (heuristic_vector[i] == 0) {
-                goalStates.add(i);
-            }
-        }
-
+        int[] heuristic_vector = {5, 7, 3, 4, 6, 8, 5, 0, 0, 0};
 
         Graph graph = new Graph();
 
@@ -181,17 +173,12 @@ public class Main {
             graph.addNode(STATES[i], heuristic_vector[i]);
         }
 
-
-
-
         // Read the cost & heuristic values into directed-weighted graphs
         int toIndex = 0;
         while (toIndex != cost_matrix.length) {
-            for (int fromIndex = 0; fromIndex < cost_matrix.length; ++ fromIndex) {
-
+            for (int fromIndex = 0; fromIndex < cost_matrix.length; ++fromIndex) {
                 if (cost_matrix[toIndex][fromIndex] != 0) {
                     graph.addEdge(STATES[fromIndex], STATES[toIndex], cost_matrix[toIndex][fromIndex]);
-
                 }
             }
             toIndex++;
@@ -199,27 +186,29 @@ public class Main {
 
         graph.printGraph();
 
+        // Perform A* search from A to G1
+        List<String> path = AStar.aStarSearch(graph, "A", "G1");
+        List<String> path1 = AStar.aStarSearch(graph, "A", "G2");
+        List<String> path2 = AStar.aStarSearch(graph, "A", "G3");
 
+        // TODO: Add a print for cost of each path (can read from the list and match the numbers with corresponding letters)
 
-//        // Add edges with costs
-//        graph.addEdge("A", "B", 1);
-//        graph.addEdge("A", "C", 4);
-//        graph.addEdge("B", "C", 2);
-//        graph.addEdge("B", "D", 5);
-//        graph.addEdge("C", "E", 3);
-//        graph.addEdge("D", "E", 1);
+        if (path != null) {
+            System.out.println("Path from A to G1: " + path);
+        } else {
+            System.out.println("No path found from A to G1.");
+        }
 
-        // Print the graph to see the structure
+        if (path != null) {
+            System.out.println("Path from A to G2: " + path1);
+        } else {
+            System.out.println("No path found from A to G2.");
+        }
 
-
-
-
-        // Identify the Goal States and save them in a new vector
-        // Write a program to implement the A * searrch
-        // Print the cheapest path, the goal state and the number of cycles
-
-        // Perform A* search from A to E
-//        List<String> path = AStar.aStarSearch(graph, "A", "E");
-//        System.out.println("Path from A to E: " + path);
+        if (path != null) {
+            System.out.println("Path from A to G3: " + path2);
+        } else {
+            System.out.println("No path found from A to G3.");
+        }
     }
 }
