@@ -61,6 +61,7 @@ class Graph {
             }
             System.out.println();
         }
+        System.out.println();
     }
 }
 
@@ -84,7 +85,42 @@ class AStar {
         }
     }
 
-    public static List<String> aStarSearch(Graph graph, String startName, String goalName) {
+    public static class PathResult {
+        List<String> path;
+        List<Integer> costs;
+
+        PathResult(List<String> path, List<Integer> costs) {
+            this.path = path;
+            this.costs = costs;
+        }
+
+
+        public void printResults() {
+            StringBuilder pathBuilder = new StringBuilder();
+            StringBuilder costsBuilder = new StringBuilder();
+            final String DESTINATION = path.get(path.size() - 1);
+
+            int size = Math.min(path.size(), costs.size());
+            System.out.println("Results for " + DESTINATION + ":");
+            pathBuilder.append("Path:  ");
+            costsBuilder.append("Cost:    ");
+
+            for (int i = 0; i < size; i++) {
+                if (i > 0) {
+                    pathBuilder.append(" -> ");
+                    costsBuilder.append("    ");
+                }
+                pathBuilder.append(path.get(i));
+                costsBuilder.append(costs.get(i));
+            }
+            pathBuilder.append(" -> ").append(DESTINATION);
+
+            System.out.println(pathBuilder.toString());
+            System.out.println(costsBuilder.toString());
+        }
+    }
+
+    public static PathResult aStarSearch(Graph graph, String startName, String goalName) {
         Node start = graph.getNode(startName);
         Node goal = graph.getNode(goalName);
 
@@ -133,17 +169,22 @@ class AStar {
         return null; // No path found
     }
 
-    private static List<String> reconstructPath(NodeRecord goalRecord) {
+    private static PathResult reconstructPath(NodeRecord goalRecord) {
         List<String> path = new ArrayList<>();
+        List<Integer> costs = new ArrayList<>();
         NodeRecord current = goalRecord;
 
         while (current != null) {
             path.add(current.node.name);
+            if (current.parent != null) {
+                costs.add(current.costSoFar - current.parent.costSoFar);
+            }
             current = current.parent;
         }
 
         Collections.reverse(path);
-        return path;
+        Collections.reverse(costs);
+        return new PathResult(path, costs);
     }
 }
 
@@ -186,29 +227,13 @@ public class Main {
 
         graph.printGraph();
 
-        // Perform A* search from A to G1
-        List<String> path = AStar.aStarSearch(graph, "A", "G1");
-        List<String> path1 = AStar.aStarSearch(graph, "A", "G2");
-        List<String> path2 = AStar.aStarSearch(graph, "A", "G3");
+        // Perform A* search from A to G1, G2, G3
+        AStar.PathResult resultG1 = AStar.aStarSearch(graph, "A", "G1");
+        AStar.PathResult resultG2 = AStar.aStarSearch(graph, "A", "G2");
+        AStar.PathResult resultG3 = AStar.aStarSearch(graph, "A", "G3");
 
-        // TODO: Add a print for cost of each path (can read from the list and match the numbers with corresponding letters)
-
-        if (path != null) {
-            System.out.println("Path from A to G1: " + path);
-        } else {
-            System.out.println("No path found from A to G1.");
-        }
-
-        if (path != null) {
-            System.out.println("Path from A to G2: " + path1);
-        } else {
-            System.out.println("No path found from A to G2.");
-        }
-
-        if (path != null) {
-            System.out.println("Path from A to G3: " + path2);
-        } else {
-            System.out.println("No path found from A to G3.");
-        }
+        resultG1.printResults();
+        resultG2.printResults();
+        resultG3.printResults();
     }
 }
