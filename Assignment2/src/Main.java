@@ -287,6 +287,11 @@ class AStar {
 public class Main {
     public final static String[] STATES = {"A", "B", "C", "D", "E", "H", "J", "G1", "G2", "G3"};
 
+    /**
+     * The main method to execute the A* search algorithm.
+     * It initializes the graph, adds nodes and edges, and performs searches from node 'A' to nodes 'G1', 'G2', and 'G3'.
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         int[][] cost_matrix = {
                 {0, 0, 0, 6, 1, 0, 0, 0, 0, 0},
