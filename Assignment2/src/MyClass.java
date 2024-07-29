@@ -6,6 +6,56 @@ import java.util.*;
  * This was done through keeping track of a search space using it's cost matrix and heuristic vector
  */
 
+/**
+ * Represents a node object for our graph data structure.
+ */
+class Node {
+    String name;
+    int heuristic;
+    List<Edge> edges;
+
+    /**
+     * Constructs a new Node object with the specified name and heuristic value.
+     * @param name The name of the node.
+     * @param heuristic The heuristic value of the node.
+     */
+    Node(String name, int heuristic) {
+        this.name = name;
+        this.heuristic = heuristic;
+        this.edges = new ArrayList<>();
+    }
+
+    /**
+     * Adds an edge to this node towards a specified target node with a given cost.
+     * (In other words, creates a path with a cost).
+     * @param target The target node of the edge.
+     * @param cost The cost of the edge.
+     */
+    void addEdge(Node target, int cost) {
+        edges.add(new Edge(this, target, cost));
+    }
+}
+
+/**
+ * Represents an edge in the graph connecting two nodes with a specified cost.
+ */
+class Edge {
+    Node source;
+    Node target;
+    int cost;
+
+    /**
+     * Constructs a new Edge object with the specified source node, target node, and cost.
+     * @param source The source node of the edge.
+     * @param target The target node of the edge.
+     * @param cost The cost of the edge.
+     */
+    Edge(Node source, Node target, int cost) {
+        this.source = source;
+        this.target = target;
+        this.cost = cost;
+    }
+}
 
 /**
  * The following class represents a Graph implementation that keeps track of the states along with the nodes
@@ -13,9 +63,6 @@ import java.util.*;
 class Graph {
     Map<String, Node> nodes;
 
-    /**
-     * Constructs a new Graph object.
-     */
     Graph() {
         nodes = new HashMap<>();
     }
@@ -46,7 +93,7 @@ class Graph {
     }
 
     /**
-     * Retrieves a node by its name.
+     * Retrieves a node given its name.
      * @param name The name of the node to retrieve.
      * @return The node with the specified name, or null if not found.
      */
@@ -70,62 +117,11 @@ class Graph {
 }
 
 /**
- * Represents a node object for our graph data structure.
- */
-class Node {
-    String name;
-    int heuristic;
-    List<Edge> edges;
-
-    /**
-     * Constructs a new Node object with the specified name and heuristic value.
-     * @param name The name of the node.
-     * @param heuristic The heuristic value of the node.
-     */
-    Node(String name, int heuristic) {
-        this.name = name;
-        this.heuristic = heuristic;
-        this.edges = new ArrayList<>();
-    }
-
-
-    /**
-     * Adds an edge to this node towards a specified target node with a given cost.
-     * (In other words, creates a path with a cost).
-     * @param target The target node of the edge.
-     * @param cost The cost of the edge.
-     */
-    void addEdge(Node target, int cost) {
-        edges.add(new Edge(this, target, cost));
-    }
-}
-
-
-/**
- * Represents an edge in the graph connecting two nodes with a specified cost.
- */
-class Edge {
-    Node source;
-    Node target;
-    int cost;
-
-    /**
-     * Constructs a new Edge object with the specified source node, target node, and cost.
-     * @param source The source node of the edge.
-     * @param target The target node of the edge.
-     * @param cost The cost of the edge.
-     */
-    Edge(Node source, Node target, int cost) {
-        this.source = source;
-        this.target = target;
-        this.cost = cost;
-    }
-}
-
-/**
  * Implements the A* search algorithm for finding the shortest path in reaching a goal state within the graph.
  */
-class AStar {
+public class MyClass {
+
+    // Represents a node record in the priority queue
     static class NodeRecord implements Comparable<NodeRecord> {
         Node node;
         NodeRecord parent;
@@ -152,6 +148,7 @@ class AStar {
         }
     }
 
+    // Represents the result of the A* search
     public static class PathResult {
         List<String> path;
         List<Integer> costs;
@@ -177,9 +174,10 @@ class AStar {
             StringBuilder costsBuilder = new StringBuilder();
             final String SOURCE = path.get(0);
             final String DESTINATION = path.get(path.size() - 1);
+            int sum = 0;
 
             int size = Math.min(path.size(), costs.size());
-            System.out.println("Path from " + SOURCE + " to " + DESTINATION + ":");
+            System.out.println("From " + SOURCE + " to " + DESTINATION + ":");
             pathBuilder.append("Path:  ");
             costsBuilder.append("Cost:    ");
 
@@ -188,11 +186,14 @@ class AStar {
                     pathBuilder.append(" -> ");
                     costsBuilder.append("    ");
                 }
+
+                sum += costs.get(i);
+
                 pathBuilder.append(path.get(i));
                 costsBuilder.append(costs.get(i));
             }
             pathBuilder.append(" -> ").append(DESTINATION);
-
+            costsBuilder.append("   =  ").append(sum);
             System.out.println(pathBuilder);
             System.out.println(costsBuilder);
             System.out.println("Number of cycles: " + numberOfCycles + "\n");
@@ -206,7 +207,7 @@ class AStar {
      * @param goalName The name of the goal node.
      * @return The result of the search containing the path, costs, and number of cycles, or null if no path is found.
      */
-    public static PathResult performSearch(Graph graph, String startName, String goalName) {
+    public static PathResult performAStarSearch(Graph graph, String startName, String goalName) {
         Node start = graph.getNode(startName);
         Node goal = graph.getNode(goalName);
 
@@ -255,8 +256,7 @@ class AStar {
             closedMap.put(current.node.name, current);
         }
 
-        // Return null if no path is found
-        return null;
+        return null; // No path found
     }
 
     /**
@@ -282,17 +282,11 @@ class AStar {
         Collections.reverse(costs);
         return new PathResult(path, costs, numberOfCycles);
     }
-}
 
-public class Main {
-    public final static String[] STATES = {"A", "B", "C", "D", "E", "H", "J", "G1", "G2", "G3"};
-
-    /**
-     * The main method to execute the A* search algorithm.
-     * It initializes the graph, adds nodes and edges, and performs searches from node 'A' to nodes 'G1', 'G2', and 'G3'.
-     * @param args Command-line arguments.
-     */
+    // Main method for running the A* search
     public static void main(String[] args) {
+        final String[] STATES = {"A", "B", "C", "D", "E", "H", "J", "G1", "G2", "G3"};
+
         int[][] cost_matrix = {
                 {0, 0, 0, 6, 1, 0, 0, 0, 0, 0},
                 {5, 0, 2, 0, 0, 0, 0, 0, 0, 0},
@@ -310,28 +304,21 @@ public class Main {
 
         Graph graph = new Graph();
 
-        // Add heuristics to the corresponding state
         for (int i = 0; i < STATES.length; ++i) {
             graph.addNode(STATES[i], heuristic_vector[i]);
         }
 
-        // Read the cost & heuristic values into directed-weighted graphs
-        int toIndex = 0;
-        while (toIndex != cost_matrix.length) {
-            for (int fromIndex = 0; fromIndex < cost_matrix.length; ++fromIndex) {
+        for (int toIndex = 0; toIndex < cost_matrix.length; toIndex++) {
+            for (int fromIndex = 0; fromIndex < cost_matrix.length; fromIndex++) {
                 if (cost_matrix[toIndex][fromIndex] != 0) {
                     graph.addEdge(STATES[fromIndex], STATES[toIndex], cost_matrix[toIndex][fromIndex]);
                 }
             }
-            toIndex++;
         }
 
-        graph.printGraph();
-
-        // Perform A* search from A to G1, G2, G3
-        AStar.PathResult resultG1 = AStar.performSearch(graph, "A", "G1");
-        AStar.PathResult resultG2 = AStar.performSearch(graph, "A", "G2");
-        AStar.PathResult resultG3 = AStar.performSearch(graph, "A", "G3");
+        PathResult resultG1 = performAStarSearch(graph, "A", "G1");
+        PathResult resultG2 = performAStarSearch(graph, "A", "G2");
+        PathResult resultG3 = performAStarSearch(graph, "A", "G3");
 
         if (resultG1 != null) resultG1.printResults();
         if (resultG2 != null) resultG2.printResults();
