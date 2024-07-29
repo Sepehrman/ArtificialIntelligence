@@ -88,20 +88,22 @@ class AStar {
     public static class PathResult {
         List<String> path;
         List<Integer> costs;
+        int numberOfCycles;
 
-        PathResult(List<String> path, List<Integer> costs) {
+        PathResult(List<String> path, List<Integer> costs, int numberOfCycles) {
             this.path = path;
             this.costs = costs;
+            this.numberOfCycles = numberOfCycles;
         }
-
 
         public void printResults() {
             StringBuilder pathBuilder = new StringBuilder();
             StringBuilder costsBuilder = new StringBuilder();
+            final String SOURCE = path.get(0);
             final String DESTINATION = path.get(path.size() - 1);
 
             int size = Math.min(path.size(), costs.size());
-            System.out.println("Results for " + DESTINATION + ":");
+            System.out.println("Path from " + SOURCE + " to " + DESTINATION + ":");
             pathBuilder.append("Path:  ");
             costsBuilder.append("Cost:    ");
 
@@ -115,8 +117,9 @@ class AStar {
             }
             pathBuilder.append(" -> ").append(DESTINATION);
 
-            System.out.println(pathBuilder.toString());
-            System.out.println(costsBuilder.toString());
+            System.out.println(pathBuilder);
+            System.out.println(costsBuilder);
+            System.out.println("Number of cycles: " + numberOfCycles + "\n");
         }
     }
 
@@ -132,12 +135,15 @@ class AStar {
         openList.add(startRecord);
         openMap.put(start.name, startRecord);
 
+        int numberOfCycles = 0;
+
         while (!openList.isEmpty()) {
+            numberOfCycles++;
             NodeRecord current = openList.poll();
             openMap.remove(current.node.name);
 
             if (current.node.name.equals(goal.name)) {
-                return reconstructPath(current);
+                return reconstructPath(current, numberOfCycles);
             }
 
             for (Edge edge : current.node.edges) {
@@ -169,7 +175,7 @@ class AStar {
         return null; // No path found
     }
 
-    private static PathResult reconstructPath(NodeRecord goalRecord) {
+    private static PathResult reconstructPath(NodeRecord goalRecord, int numberOfCycles) {
         List<String> path = new ArrayList<>();
         List<Integer> costs = new ArrayList<>();
         NodeRecord current = goalRecord;
@@ -184,7 +190,7 @@ class AStar {
 
         Collections.reverse(path);
         Collections.reverse(costs);
-        return new PathResult(path, costs);
+        return new PathResult(path, costs, numberOfCycles);
     }
 }
 
@@ -232,8 +238,8 @@ public class Main {
         AStar.PathResult resultG2 = AStar.aStarSearch(graph, "A", "G2");
         AStar.PathResult resultG3 = AStar.aStarSearch(graph, "A", "G3");
 
-        resultG1.printResults();
-        resultG2.printResults();
-        resultG3.printResults();
+        if (resultG1 != null) resultG1.printResults();
+        if (resultG2 != null) resultG2.printResults();
+        if (resultG3 != null) resultG3.printResults();
     }
 }
