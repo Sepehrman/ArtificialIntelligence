@@ -171,9 +171,11 @@ public class MyClass {
             this.numberOfCycles = numberOfCycles;
         }
 
+        /**
+         * Prints the cheapest path printed results to the console
+         */
         public void printForCheapestPath() {
             StringBuilder pathBuilder = new StringBuilder();
-            StringBuilder costsBuilder = new StringBuilder();
             final String SOURCE = path.get(0);
             final String DESTINATION = path.get(path.size() - 1);
             int sum = 0;
@@ -357,10 +359,9 @@ public class MyClass {
         graph.addPath(resultG2);
         graph.addPath(resultG3);
 
-
+        // Determines the cheapest path
         PathResult cheapestPath = null;
         int minCost = Integer.MAX_VALUE;
-
 
         for (PathResult result : graph.pathResults) {
             result.printResults();
@@ -371,9 +372,7 @@ public class MyClass {
             }
         }
 
-        // Determine and print the cheapest path
-
-
+        // Prints the cheapest path obtained from all 3 results
         if (cheapestPath != null) {
             cheapestPath.printForCheapestPath();
         } else {
