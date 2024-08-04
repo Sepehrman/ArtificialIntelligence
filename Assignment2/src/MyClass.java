@@ -62,9 +62,14 @@ class Edge {
  */
 class Graph {
     Map<String, Node> nodes;
+    List<MyClass.PathResult> pathResults = new ArrayList<>();
 
     Graph() {
         nodes = new HashMap<>();
+    }
+
+    void addPath(MyClass.PathResult path) {
+        pathResults.add(path);
     }
 
     /**
@@ -164,6 +169,32 @@ public class MyClass {
             this.path = path;
             this.costs = costs;
             this.numberOfCycles = numberOfCycles;
+        }
+
+        public void printForCheapestPath() {
+            StringBuilder pathBuilder = new StringBuilder();
+            StringBuilder costsBuilder = new StringBuilder();
+            final String SOURCE = path.get(0);
+            final String DESTINATION = path.get(path.size() - 1);
+            int sum = 0;
+
+            int size = Math.min(path.size(), costs.size());
+            pathBuilder.append("Cheapest path is from ").append(SOURCE).append(" to ").append(DESTINATION).append(". With the Path: ");
+
+            for (int i = 0; i < size; i++) {
+                if (i > 0) {
+                    pathBuilder.append(" -> ");
+                }
+
+                sum += costs.get(i);
+
+                pathBuilder.append(path.get(i));
+            }
+            pathBuilder.append(" -> ").append(DESTINATION);
+            pathBuilder.append("\nOverall Cost of: ").append(sum).append(" and number of cycles ").append(numberOfCycles);
+
+            System.out.println(pathBuilder);
+
         }
 
         /**
@@ -316,12 +347,37 @@ public class MyClass {
             }
         }
 
+
+
         PathResult resultG1 = performAStarSearch(graph, "A", "G1");
         PathResult resultG2 = performAStarSearch(graph, "A", "G2");
         PathResult resultG3 = performAStarSearch(graph, "A", "G3");
 
-        if (resultG1 != null) resultG1.printResults();
-        if (resultG2 != null) resultG2.printResults();
-        if (resultG3 != null) resultG3.printResults();
+        graph.addPath(resultG1);
+        graph.addPath(resultG2);
+        graph.addPath(resultG3);
+
+
+        PathResult cheapestPath = null;
+        int minCost = Integer.MAX_VALUE;
+
+
+        for (PathResult result : graph.pathResults) {
+            result.printResults();
+            int cost = result.costs.stream().mapToInt(Integer::intValue).sum();
+            if (cost < minCost) {
+                minCost = cost;
+                cheapestPath = result;
+            }
+        }
+
+        // Determine and print the cheapest path
+
+
+        if (cheapestPath != null) {
+            cheapestPath.printForCheapestPath();
+        } else {
+            System.out.println("No valid paths found.");
+        }
     }
 }
