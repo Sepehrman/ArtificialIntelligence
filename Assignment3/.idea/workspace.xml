@@ -2,7 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="087c3bc9-14ee-4df1-8920-82428c076c2d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/MyClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MyClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assignment2/out/production/Assignment2/MyClass$PathResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Assignment2/out/production/Assignment2/MyClass$PathResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Assignment2/out/production/Assignment2/MyClass.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Assignment2/out/production/Assignment2/MyClass.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/TestProject.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/out/production/TestProject/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TestProject/src/Main.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +38,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Assignment1" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Assignment2" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.0" />
@@ -61,6 +69,7 @@
       <updated>1723067233466</updated>
       <workItem from="1723067234616" duration="1232000" />
       <workItem from="1723071111790" duration="1644000" />
+      <workItem from="1723078420015" duration="218000" />
     </task>
     <servers />
   </component>
