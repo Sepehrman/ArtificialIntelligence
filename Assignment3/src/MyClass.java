@@ -90,7 +90,6 @@ public class MyClass {
     }
 
     public void runHillClimbing() {
-
         System.out.println("Initial State: ");
         printStateArray(currentState);
 
@@ -116,8 +115,6 @@ public class MyClass {
 
         System.out.println("Final State:");
         printStateArray(currentState);
-
-
     }
 
     private void printStateArray(char[] state) {
