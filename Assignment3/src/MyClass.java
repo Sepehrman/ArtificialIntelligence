@@ -67,7 +67,6 @@ public class MyClass {
                 cost = 5;
                 break;
         }
-
         return cost;
     }
 
@@ -86,6 +85,7 @@ public class MyClass {
                 }
             }
         }
+        System.out.println(counter);
         return counter;
     }
 
