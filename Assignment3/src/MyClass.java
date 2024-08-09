@@ -91,13 +91,13 @@ public class MyClass {
 
     public void runHillClimbing() {
 
-        System.out.println("Initial State:");
+        System.out.println("Initial State: ");
         printStateArray(currentState);
 
         int currentHeuristic = heuristicFunction(currentState);
         int currentCost = costFunction();
 
-        while (!isGoalState()) {
+        while (!hasGoalState()) {
             char[] nextState = successorFunction();
             int nextHeuristic = heuristicFunction(nextState);
             int nextCost = costFunction();
@@ -112,7 +112,7 @@ public class MyClass {
             }
         }
         System.out.println("Heuristic: " + currentHeuristic);
-        System.out.println("Total cost: " + currentCost);
+        System.out.println("Total cost: " + currentCost + "\n");
 
         System.out.println("Final State:");
         printStateArray(currentState);
@@ -131,7 +131,7 @@ public class MyClass {
      * Check if a matrix is a goal state
      * @return a Boolean representing if a goal state has reached
      */
-    public boolean isGoalState() {
+    public boolean hasGoalState() {
         return heuristicFunction(currentState) == 0;
     }
 
@@ -142,6 +142,7 @@ public class MyClass {
      */
     public MyClass(int k) {
         this.kValue = k;
+        // Only allow the first k colours from the available set of colours
     }
 
     public static void main(String[] args) {

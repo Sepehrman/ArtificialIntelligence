@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="087c3bc9-14ee-4df1-8920-82428c076c2d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Assignment3/MyClass.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Assignment3/MyClass.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MyClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MyClass.java" afterDir="false" />
     </list>
@@ -41,7 +42,7 @@
     <configuration name="MyClass" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MyClass" />
       <module name="Assignment3" />
-      <option name="PROGRAM_PARAMETERS" value="3" />
+      <option name="PROGRAM_PARAMETERS" value="4" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -63,7 +64,7 @@
       <workItem from="1723067234616" duration="1232000" />
       <workItem from="1723071111790" duration="1644000" />
       <workItem from="1723078420015" duration="218000" />
-      <workItem from="1723153545649" duration="10118000" />
+      <workItem from="1723153545649" duration="10578000" />
     </task>
     <servers />
   </component>
