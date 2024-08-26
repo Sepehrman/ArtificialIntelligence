@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="087c3bc9-14ee-4df1-8920-82428c076c2d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assignment 3 - Questions.docx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Assignment3/MyClass.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Assignment3/MyClass.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MyClass.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MyClass.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/~$signment 3 - Questions.docx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,28 +24,38 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="ProjectId" id="2kLeLy6uo4jGKXL1qBVBCI1A8P4" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Comp3711-Assignments/Assignment2" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
-  </component>
-  <component name="RunManager">
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "aspect.path.notification.shown": "true",
+    "last_opened_file_path": "C:/Users/Sepeh/source/repos/ArtificialIntelligence/Assignment3",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Application.MyClass">
+    <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Assignment3" />
+      <option name="PROGRAM_PARAMETERS" value="3" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MyClass" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="MyClass" />
       <module name="Assignment3" />
-      <option name="PROGRAM_PARAMETERS" value="4" />
+      <option name="PROGRAM_PARAMETERS" value="3" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -65,6 +78,7 @@
       <workItem from="1723071111790" duration="1644000" />
       <workItem from="1723078420015" duration="218000" />
       <workItem from="1723153545649" duration="12912000" />
+      <workItem from="1724698539906" duration="5934000" />
     </task>
     <servers />
   </component>
@@ -81,6 +95,5 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
 </project>

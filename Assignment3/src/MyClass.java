@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Random;
 
 public class MyClass {
@@ -20,26 +21,23 @@ public class MyClass {
 
     // Array for initial state, S0
     char[] currentState = {'b', 'o', 'o', 'o', 'r', 'r', 'j', 'j', 'j', 'j', 'j', 'j', 'j'};
-    char[] colours = {'b', 'o', 'r', 'j'};
+    public static char[] colors = {'b', 'o', 'r', 'j'};
     int kValue;
 
 
-    public char[] successorFunction() {
-        Random rand = new Random();
-        char[] newState = currentState.clone();
-
-        // Randomly select a region to change its color
-        int regionToChange = rand.nextInt(currentState.length);
-        char currentColor = newState[regionToChange];
-
-        // Ensure that the new color is different from the current color
-        char newColor;
-        do {
-            newColor = colours[rand.nextInt(kValue)];
-        } while (newColor == currentColor);
-
-        newState[regionToChange] = newColor;
-        return newState;
+    public ArrayList<char[]> successorFunction() {
+        ArrayList<char[]> successorStates = new ArrayList<>();
+        for (int index = 0; index < currentState.length; index++) {
+            char currentColour = currentState[index];
+            for (char color : colorSet) {
+                if (color != currentColour) {
+                    char[] currentSuccessor = currentState.clone();
+                    currentSuccessor[index] = color;
+                    successorStates.add(currentSuccessor);
+                }
+            }
+        }
+        return successorStates;
     }
 
     public int costFunction() {
@@ -50,6 +48,9 @@ public class MyClass {
 
         return totalCost;
     }
+
+    public static ArrayList<Character> colorSet = new ArrayList<>();
+
 
     public int mapCost(char color) {
         int cost = 0;
@@ -92,25 +93,33 @@ public class MyClass {
     public void runHillClimbing() {
         System.out.println("Initial State: ");
         printStateArray(currentState);
-
-        int currentHeuristic = heuristicFunction(currentState);
         int currentCost = costFunction();
 
         while (!hasGoalState()) {
-            char[] nextState = successorFunction();
-            int nextHeuristic = heuristicFunction(nextState);
+            ArrayList<char[]> successorStates = successorFunction();
+            int currentHeuristic = heuristicFunction(currentState);
             int nextCost = costFunction();
+            char[] nextState = null;
+
+            for (char[] successor : successorStates) {
+
+                int successorHeuristic = heuristicFunction(successor);
+
+                if (heuristicFunction(successor) < currentHeuristic) {
+                    nextState = successor;
+                    currentHeuristic = successorHeuristic;
+                }
+            }
 
             // Move to the successor state if it has a better heuristic or equal heuristic but lower cost
-            if (nextHeuristic < currentHeuristic || (nextHeuristic == currentHeuristic && nextCost < currentCost)) {
+            if (nextState != null) {
                 currentState = nextState;
-                currentHeuristic = nextHeuristic;
+//                currentHeuristic = currentHeuristic;
                 currentCost = nextCost;
             } else {
                 break; // Local maximum reached
             }
         }
-        System.out.println("Heuristic: " + currentHeuristic);
         System.out.println("Total cost: " + currentCost + "\n");
 
         System.out.println("Final State:");
@@ -144,11 +153,19 @@ public class MyClass {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Please provide the k-Value as a Command Line Argument.");
+            System.out.println("Please provide a valid k-value as a command line");
             return;
         }
-
         int k = Integer.parseInt(args[0]);
+
+        if (k < 2 || k > 4)
+
+        System.out.println("K-value is: " + k);
+
+        for (int index = 0; index < k; index++) {
+            colorSet.add(colors[index]);
+        }
+
         MyClass myClass = new MyClass(k);
         myClass.runHillClimbing();
 
