@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MyClass {
 
@@ -23,7 +22,7 @@ public class MyClass {
     char[] currentState = {'b', 'o', 'o', 'o', 'r', 'r', 'j', 'j', 'j', 'j', 'j', 'j', 'j'};
     public static char[] colors = {'b', 'o', 'r', 'j'};
     int kValue;
-
+    public static ArrayList<Character> colorSet = new ArrayList<>();
 
     public ArrayList<char[]> successorFunction() {
         ArrayList<char[]> successorStates = new ArrayList<>();
@@ -49,9 +48,11 @@ public class MyClass {
         return totalCost;
     }
 
-    public static ArrayList<Character> colorSet = new ArrayList<>();
-
-
+    /**
+     * Maps the cost of a color to
+     * @param color
+     * @return
+     */
     public int mapCost(char color) {
         int cost = 0;
         switch(color) {
@@ -86,14 +87,14 @@ public class MyClass {
                 }
             }
         }
-        System.out.println(counter);
         return counter;
     }
 
     public void runHillClimbing() {
-        System.out.println("Initial State: ");
-        printStateArray(currentState);
         int currentCost = costFunction();
+
+        System.out.println("Initial State: " + printState(currentState));
+        System.out.println("Initial Cost: " + currentCost);
 
         while (!hasGoalState()) {
             ArrayList<char[]> successorStates = successorFunction();
@@ -114,23 +115,23 @@ public class MyClass {
             // Move to the successor state if it has a better heuristic or equal heuristic but lower cost
             if (nextState != null) {
                 currentState = nextState;
-//                currentHeuristic = currentHeuristic;
                 currentCost = nextCost;
             } else {
                 break; // Local maximum reached
             }
         }
+        System.out.println("\nFinal State:" + printState(currentState));
         System.out.println("Total cost: " + currentCost + "\n");
 
-        System.out.println("Final State:");
-        printStateArray(currentState);
     }
 
-    private void printStateArray(char[] state) {
+    private String printState(char[] state) {
+        StringBuilder output = new StringBuilder("");
         for (char c : state) {
-            System.out.print(c + " ");
+            output.append(c + " ");
         }
-        System.out.println();
+
+        return output.toString();
     }
 
     /**
@@ -158,9 +159,9 @@ public class MyClass {
         }
         int k = Integer.parseInt(args[0]);
 
-        if (k < 2 || k > 4)
+        if (k <= 2 || k > 4)
 
-        System.out.println("K-value is: " + k);
+            System.out.println("K-value is: " + k);
 
         for (int index = 0; index < k; index++) {
             colorSet.add(colors[index]);
