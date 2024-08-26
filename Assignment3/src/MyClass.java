@@ -21,8 +21,8 @@ public class MyClass {
     // Array for initial state, S0
     char[] currentState = {'b', 'o', 'o', 'o', 'r', 'r', 'j', 'j', 'j', 'j', 'j', 'j', 'j'};
     public static char[] colors = {'b', 'o', 'r', 'j'};
-    int kValue;
     public static ArrayList<Character> colorSet = new ArrayList<>();
+    int kValue;
 
     public ArrayList<char[]> successorFunction() {
         ArrayList<char[]> successorStates = new ArrayList<>();
