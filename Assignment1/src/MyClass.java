@@ -38,7 +38,7 @@ public class MyClass {
 
         // If all rooms are clean, keep location at the current room and exit
         if (A_status && B_status && C_status && D_status) {
-            System.out.println("\nAction - Next Location = " + current_location);
+            System.out.println("Action - Next Location = " + current_location);
             return;
         }
 
@@ -47,13 +47,13 @@ public class MyClass {
 
         // If current room is clean, stay and clean current location then exit
         if (environment[horizIndex][vertIndex] == current_location && !roomStates[horizIndex][vertIndex]) {
-            System.out.println("\nAction - Next Location = " + current_location);
+            System.out.println("Action - Next Location = " + current_location);
             return;
         }
 
         // Finds the relevant action provided there is a dirty room in neighbouring rooms
         char action = findAction(environment);
-        System.out.println("\nAction - Next Location = " + action);
+        System.out.println("Action - Next Location = " + action);
     }
 
     /**
