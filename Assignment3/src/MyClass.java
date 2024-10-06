@@ -23,6 +23,7 @@ public class MyClass {
     public static char[] colors = {'b', 'o', 'r', 'j'};
     public static ArrayList<Character> colorSet = new ArrayList<>();
     int kValue;
+    private boolean improvementFound;
 
     public ArrayList<char[]> successorFunction() {
         ArrayList<char[]> successorStates = new ArrayList<>();
@@ -149,25 +150,78 @@ public class MyClass {
      */
     public MyClass(int k) {
         this.kValue = k;
-        // Only allow the first k colours from the available set of colours
+
+        if (k == 3) {
+            // Replace 'j' with a color that costs less
+            updateToThreeStates();
+        }
     }
+
+
+    public void updateToThreeStates() {
+        char[] newInitialState = currentState.clone();
+        // Loop through all colors in the state array
+        for (int index = 0; index < newInitialState.length; index++) {
+            if (newInitialState[index] == 'j') {
+                // Replace the fourth color 'j' with a valid color
+                newInitialState[index] = getCheapestValidColour(index, newInitialState);
+            }
+        }
+        currentState = newInitialState; // Update the current state
+    }
+
+
+
+    public char getCheapestValidColour(int regionIndex, char[] currentState) {
+        // Step 1: Find colors used by adjacent regions
+        boolean[] usedColors = new boolean[colors.length]; // Track colors that are in use by adjacent regions
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            if (adjacencyMatrix[regionIndex][i] == 1) { // If i is adjacent to regionIndex
+                char adjacentColor = currentState[i];
+                // Mark the color as used
+                for (int j = 0; j < colors.length; j++) {
+                    if (colors[j] == adjacentColor) {
+                        usedColors[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Step 2: Find the cheapest valid color
+        char cheapestColor = colors[0];
+        int minCost = Integer.MAX_VALUE;
+
+        for (int j = 0; j < colors.length; j++) {
+            if (!usedColors[j]) { // If color is not used by adjacent regions
+                int colorCost = mapCost(colors[j]);
+                if (colorCost < minCost) {
+                    minCost = colorCost;
+                    cheapestColor = colors[j];
+                }
+            }
+        }
+
+        return cheapestColor; // Return the cheapest valid color
+    }
+
 
     public static void main(String[] args) {
         if (args.length < 1) {
             System.out.println("Please provide a valid k-value as a command line");
             return;
         }
-        int k = Integer.parseInt(args[0]);
+        int kValue = Integer.parseInt(args[0]);
 
-        if (k <= 2 || k > 4)
+        if (kValue <= 2 || kValue > 4)
 
-            System.out.println("K-value is: " + k);
+            System.out.println("K-value is: " + kValue);
 
-        for (int index = 0; index < k; index++) {
+        for (int index = 0; index < kValue; index++) {
             colorSet.add(colors[index]);
         }
 
-        MyClass myClass = new MyClass(k);
+        MyClass myClass = new MyClass(kValue);
         myClass.runHillClimbing();
 
     }
