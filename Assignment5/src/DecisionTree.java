@@ -5,15 +5,16 @@ import java.util.*;
 
 
 
-class Subsets {
+class Split {
 
     private double averageEntropies;
     private double total;
+    private String subject;
     private ArrayList<Subset> subsets;
     private double parentEntropy;
     private double informationGain;
 
-    public Subsets() {
+    public Split() {
         this.total = 0;
         subsets = new ArrayList<Subset>();
         parentEntropy = 0;
@@ -27,6 +28,15 @@ class Subsets {
         this.parentEntropy = parentEntropy;
     }
 
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
     public ArrayList<Subset> getSubsets() {
         return subsets;
     }
@@ -35,6 +45,7 @@ class Subsets {
         subsets.add(subset);
         total += subset.getInstanceCount();
     }
+
 
 
     public void flush() {
@@ -50,14 +61,18 @@ class Subsets {
         for (Subset subset : subsets) {
             averageEntropies += ((subset.getInstanceCount()/total) * subset.getEntropy());
         }
-
-        System.out.println("Weighted Avg. Entropy of Children: " + averageEntropies);
-
     }
 
     public double getInformationGain() {
         return parentEntropy - averageEntropies;
     }
+
+
+    @Override
+    public String toString() {
+        return "Weighted Avg. Entropy: " + averageEntropies + "\nInformation Gain: " + getInformationGain();
+    }
+
 }
 
 
@@ -169,7 +184,7 @@ public class DecisionTree {
             childEntropy += calculateEntropy(currentFraction);
         }
 
-        System.out.println("Child Entropy = " + childEntropy);
+        System.out.println(" Child Entropy = " + childEntropy);
         return childEntropy;
     }
 
@@ -300,47 +315,48 @@ public class DecisionTree {
         System.out.println("Dataset Entropy: " + parentEntropy);
 
         ArrayList<Subset> parentEntropyOptions = new ArrayList<>(); // Don't modify yet
-        ArrayList<Subsets> entropiesOptions = new ArrayList<Subsets>();
+        ArrayList<Split> entropiesOptions = new ArrayList<Split>();
 
         for (int attributeIndex = 0; attributeIndex < attributesIndices.size() - 1; attributeIndex++) {
             System.out.println("**************************************************");
             String attribute = attributesIndices.get(attributeIndex);
-            System.out.println("\nCalculating the entropy for " + attribute);
+            System.out.println("\nSplit based on Subject of " + attribute);
             HashMap<String, ArrayList<String[]>> subsets = splitAttributeData(data, attributeIndex);
-            Subsets subsetsCollection = new Subsets();
+            Split splitCollection = new Split();
 
             for (String attributeValue : subsets.keySet()) {
-                System.out.println(" " + attributeValue + ":");
+                System.out.println("- Subset of grade " + attributeValue + ":");
                 ArrayList<String[]> subset = subsets.get(attributeValue);
                 double subsetEntropy = calculateSubsetEntropy(subset);
                 Subset currentSubset = new Subset(subset.size(), attribute, attributeValue, subsetEntropy, parentEntropy);
-//                double informationGain = parentEntropy - subsetEntropy; WRONG
                 System.out.println();
-                subsetsCollection.addSubset(currentSubset);
+                splitCollection.addSubset(currentSubset);
             }
-
-            subsetsCollection.calculateAverageEntropies();
-            subsetsCollection.setParentEntropy(parentEntropy);
-            entropiesOptions.add(subsetsCollection);
+            splitCollection.setSubject(attribute);
+            splitCollection.calculateAverageEntropies();
+            splitCollection.setParentEntropy(parentEntropy);
+            entropiesOptions.add(splitCollection);
+            System.out.println(splitCollection);
         }
-        Subsets splitWithHighestInfoGain = findSubsetsOfHighestInfoGain(entropiesOptions);
+        Split splitWithHighestInfoGain = findSubsetsOfHighestInfoGain(entropiesOptions);
         Subset nextParentSubset = getHighestInformationGain(parentEntropyOptions);
         return nextParentSubset.getEntropy();
     }
 
 
-    public Subsets findSubsetsOfHighestInfoGain(List<Subsets> listSubsets) {
-        Subsets pickedSubsets = null;
+    public Split findSubsetsOfHighestInfoGain(List<Split> listSubsets) {
+        Split pickedSplit = null;
         double highestInfoGain = 0.0;
-        for (Subsets subsets : listSubsets) {
-            if (subsets.getInformationGain() > highestInfoGain) {
-                highestInfoGain = subsets.getInformationGain();
-                pickedSubsets = subsets;
+        for (Split split : listSubsets) {
+            if (split.getInformationGain() > highestInfoGain) {
+                highestInfoGain = split.getInformationGain();
+                pickedSplit = split;
             }
         }
         System.out.println("\n\n**************************************************");
         System.out.println("Highest Information Gain: " + highestInfoGain);
-        return pickedSubsets;
+        System.out.println("Next Subset to split is on subject " + pickedSplit.getSubject());
+        return pickedSplit;
     }
 
 
