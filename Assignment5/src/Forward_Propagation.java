@@ -2,33 +2,45 @@ import java.util.Random;
 
 class Forward_Propagation {
     // Inputs and outputs for training
+
+    Random rand = new Random();
+    double[] weights = new double[3];
+    double bias;
+
+
     double[][] inputs = new double[][]{
-            {0, 0, 1}, // Instance 1
-            {1, 1, 1}, // Instance 2
-            {1, 0, 1}, // Instance 3
-            {0, 1, 1}  // Instance 4
+            {0, 0, 1},
+            {1, 1, 1},
+            {1, 0, 1},
+            {0, 1, 1}
     };
 
     double[][] outputs = new double[][]{
-            {0}, // Fake
-            {1}, // Real
-            {1}, // Real
-            {0}  // Fake
+            {0},
+            {1},
+            {1},
+            {0}
     };
 
-    double[] weights = new double[3]; // Weights for 3 inputs
-    double bias;
-    Random rand = new Random();
+    public double[][] getInputs() {
+        return inputs;
+    }
+
+    public double[][] getOutputs() {
+        return outputs;
+    }
+
+    public double getBias() {
+        return bias;
+    }
 
     public Forward_Propagation() {
-        // Initialize weights and bias
         for (int i = 0; i < weights.length; i++) {
-            weights[i] = rand.nextDouble(); // Random weight between 0 and 1
+            weights[i] = rand.nextDouble();
         }
         bias = rand.nextDouble(); // Random bias
     }
 
-    // Sigmoid activation function
     public double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
     }
@@ -42,4 +54,5 @@ class Forward_Propagation {
         double activatedOutput = sigmoid(sum);
         return new double[]{activatedOutput}; // Return activated output
     }
+
 }
