@@ -1,58 +1,55 @@
 import java.util.Random;
 
 class Forward_Propagation {
-    // Inputs and outputs for training
-
-    Random rand = new Random();
-    double[] weights = new double[3];
-    double bias;
-
-
-    double[][] inputs = new double[][]{
+    public double[][] inputs = new double[][]{
             {0, 0, 1},
             {1, 1, 1},
             {1, 0, 1},
             {0, 1, 1}
     };
 
-    double[][] outputs = new double[][]{
+    public double[][] outputs = new double[][]{
             {0},
             {1},
             {1},
             {0}
     };
 
-    public double[][] getInputs() {
-        return inputs;
-    }
-
-    public double[][] getOutputs() {
-        return outputs;
-    }
-
-    public double getBias() {
-        return bias;
-    }
+    private double[] weights;
+    private double bias;
 
     public Forward_Propagation() {
+        Random random = new Random();
+        weights = new double[inputs[0].length];
         for (int i = 0; i < weights.length; i++) {
-            weights[i] = rand.nextDouble();
+            weights[i] = random.nextDouble();
         }
-        bias = rand.nextDouble(); // Random bias
+        bias = random.nextDouble();
+    }
+
+    public double[] calculateOutput(double[] input) {
+        double linearOutput = 0;
+        for (int i = 0; i < weights.length; i++) {
+            linearOutput += input[i] * weights[i];
+        }
+        linearOutput += bias;
+        return new double[]{sigmoid(linearOutput)};
+    }
+
+    public void updateWeights(double[] input, double expectedOutput, double actualOutput, double learningRate) {
+        double error = expectedOutput - actualOutput;
+        for (int i = 0; i < weights.length; i++) {
+            weights[i] += learningRate * error * input[i];
+        }
+        bias += learningRate * error; // Update bias
     }
 
     public double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
     }
 
-    // Calculate output for a given input
-    public double[] calculateOutput(double[] input) {
-        double sum = bias; // Start with bias
-        for (int i = 0; i < input.length; i++) {
-            sum += input[i] * weights[i];
-        }
-        double activatedOutput = sigmoid(sum);
-        return new double[]{activatedOutput}; // Return activated output
+    public double sigmoidDerivative(double x) {
+        return x * (1 - x);
     }
 
 }

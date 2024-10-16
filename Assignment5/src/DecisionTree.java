@@ -51,22 +51,22 @@ public class DecisionTree {
 
         double entropy = 0.0;
         int total = dataset.size();
-        System.out.println("Instances: " + total);
-        System.out.println("Counts: " + labelCounts);
+        System.out.println("  Instances: " + total);
+        System.out.println("  Counts: " + labelCounts);
         for (Map.Entry<String, Integer> entry : labelCounts.entrySet()) {
             String label = entry.getKey();
             int count = entry.getValue();
             double probability = (double) count / total;
 
-            System.out.println("P(" + label + "): " + probability + " (" + count + "/" + total + ")");
+            System.out.println("  P(" + label + "): " + probability + " (" + count + "/" + total + ")");
             entropy -= probability * (Math.log(probability) / Math.log(2));
         }
-        System.out.println("entropy: " + entropy + "\n");
+        System.out.println("  Entropy: " + entropy + "\n");
         return entropy;
     }
 
     public static double calculateInformationGain(List<Record> dataset, int attributeIndex, String attributeName) {
-        System.out.println("Calculating entropy for attribute: " + attributeName);
+        System.out.println("\nCalculating entropies for attribute: " + attributeName);
 
         double totalEntropy = calculateEntropy(dataset);
         Map<String, List<Record>> subsets = new HashMap<>();
@@ -107,7 +107,7 @@ public class DecisionTree {
         }
 
         System.out.println("\nHighest Information Gain is: " + maxGain);
-        System.out.println("The best choice to split is " + attributes.get(bestAttribute));
+        System.out.println(".·. The best choice to split is " + attributes.get(bestAttribute) + "\n");
         return bestAttribute;
     }
 
@@ -197,9 +197,8 @@ public class DecisionTree {
             String file = args[0];
             List<String> attributes = new ArrayList<>();
             List<Record> dataset = readCSV(file, attributes);  // Read file and header labels
-            System.out.println(dataset);
-
             DecisionNode tree = buildDecisionTree(dataset, new HashSet<>(), attributes);
+            System.out.println("Process Finished.\n\nDecision Tree Structure: ");
             printTree(tree, "  ");
         } catch (Exception e) {
             System.out.println(e.getMessage());
