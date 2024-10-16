@@ -1,371 +1,205 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 
+public class DecisionTree {
 
+    // Data structure to hold records
+    static class Record {
+        String[] attributes;
+        String label;
 
-class Subsets {
-
-    private double averageEntropies;
-    private double total;
-    private ArrayList<Subset> subsets;
-    private double parentEntropy;
-    private double informationGain;
-
-    public Subsets() {
-        this.total = 0;
-        subsets = new ArrayList<Subset>();
-        parentEntropy = 0;
-    }
-
-    public void setInformationGain(double informationGain) {
-        this.informationGain = informationGain;
-    }
-
-    public void setParentEntropy(double parentEntropy) {
-        this.parentEntropy = parentEntropy;
-    }
-
-    public ArrayList<Subset> getSubsets() {
-        return subsets;
-    }
-
-    public void addSubset(Subset subset) {
-        subsets.add(subset);
-        total += subset.getInstanceCount();
-    }
-
-
-    public void flush() {
-        subsets.clear();
-    }
-
-    public double getAverageEntropies() {
-        return averageEntropies;
-    }
-
-    public void calculateAverageEntropies() {
-        averageEntropies = 0;
-        for (Subset subset : subsets) {
-            averageEntropies += ((subset.getInstanceCount()/total) * subset.getEntropy());
+        Record(String[] attributes, String label) {
+            this.attributes = attributes;
+            this.label = label;
         }
 
-        System.out.println("Weighted Avg. Entropy of Children: " + averageEntropies);
-
+        @Override
+        public String toString() {
+            return "Record{" +
+                    "attributes=" + Arrays.toString(attributes) +
+                    ", label='" + label + '\'' +
+                    '}';
+        }
     }
 
-    public double getInformationGain() {
-        return parentEntropy - averageEntropies;
-    }
-}
-
-
-
-class Subset {
-    private final String attributeName;
-    private final String attributeValue;
-    private final double entropy;
-    private final double parentEntropy;
-    private final double instanceCount;
-
-
-    public Subset(double instanceCount, String attributeName, String attributeValue, double entropy, double parentEntropy) {
-        this.attributeName = attributeName;
-        this.attributeValue = attributeValue;
-        this.entropy = entropy;
-        this.parentEntropy = parentEntropy;
-        this.instanceCount = instanceCount;
+    public static List<Record> readCSV(String filename) throws IOException {
+        List<Record> dataset = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader(filename));
+        String line;
+        br.readLine(); // Skip the header
+        while ((line = br.readLine()) != null) {
+            String[] values = line.split(",");
+            dataset.add(new Record(Arrays.copyOf(values, values.length - 1), values[values.length - 1]));
+        }
+        br.close();
+        return dataset;
     }
 
 
-    public double getInstanceCount() {
-        return instanceCount;
-    }
+    // Entropy calculation
+    public static double calculateEntropy(List<Record> dataset) {
+        Map<String, Integer> labelCounts = new HashMap<>();
+        for (Record record : dataset) {
+            labelCounts.put(record.label, labelCounts.getOrDefault(record.label, 0) + 1);
+        }
 
-    public String getAttributeName() {
-        return attributeName;
-    }
+        double entropy = 0.0;
+        int total = dataset.size();
+        System.out.println("Instances: " + total);
+        System.out.println("Counts: " + labelCounts);
+        for (Map.Entry<String, Integer> entry : labelCounts.entrySet()) {
+            String label = entry.getKey();
+            int count = entry.getValue();
+            double probability = (double) count / total;
 
-    @Override
-    public String toString() {
-        return "Subset for " + attributeName + ", Value: " + attributeValue
-                + ", Entropy: " + entropy + ", Parent Entropy: " + parentEntropy + ", " +
-                "instanceCount: " + instanceCount;
-    }
-
-    public String getAttributeValue() {
-        return attributeValue;
-    }
-
-    public double getEntropy() {
+            System.out.println("P(" + label + "): " + probability + " (" + count + "/" + total + ")");
+            entropy -= probability * (Math.log(probability) / Math.log(2));
+        }
+        System.out.println("entropy: " + entropy + "\n");
         return entropy;
     }
 
-    public double getParentEntropy() {
-        return parentEntropy;
-    }
-}
-
-public class DecisionTree {
-    private final HashMap<Integer, String> attributesIndices = new HashMap<>();
-    private final ArrayList<String[]> data = new ArrayList<>();
-    private final String file;
-
-    public DecisionTree(String filename) {
-        this.file = filename;
-        readData();
-    }
+    // Information Gain calculation
+    public static double calculateInformationGain(List<Record> dataset, int attributeIndex) {
+        double totalEntropy = calculateEntropy(dataset);
+        Map<String, List<Record>> subsets = new HashMap<>();
 
 
-    public void readData() {
-        try {
-            // Create objects to read the file
-            File file = new File(this.file);
-            FileReader fileReader = new FileReader(file);
-            BufferedReader bufferReader = new BufferedReader(fileReader);
-            // Store current file line and its data
-            String currentLine;
-            String[] currentFileData;
-
-            // Read the first line with the attributes (column names) in the file
-            currentLine = bufferReader.readLine();
-            currentFileData = currentLine.split(",");
-            // Store the attributes and their column index in the file
-            for (int columnIndex = 0; columnIndex < currentFileData.length; columnIndex++) {
-                String attributeName = currentFileData[columnIndex];
-                attributesIndices.put(columnIndex, attributeName);
-            }
-
-            // Read the file line by line
-            while ((currentLine = bufferReader.readLine()) != null) {
-                // Get line of data
-                currentFileData = currentLine.split(",");
-                // Store data in the ArrayList
-                data.add(currentFileData);
-            }
-            bufferReader.close();
-
-        } catch (Exception exception) {
-            // If an error occurs, print the error message
-            System.out.println("Error: " + exception.getMessage());
-        }
-    }
-
-    public double calculateEntropy(double recordFraction) {
-        if (recordFraction == 0) {
-            return 0;
-        }
-        return -recordFraction * (Math.log(recordFraction) / Math.log(2));
-
-    }
-
-    public double calculateTotalChildEntropy(ArrayList<Double> recordFractions) {
-        // Calculate child entropy: H(X) = −p(x1)log2 p(x1) −p(x2)log2 p(x2) ... −p(xn)log2 p(xn)
-        double childEntropy = 0;
-        // Sum all entropy values
-        for (double currentFraction : recordFractions) {
-
-            childEntropy += calculateEntropy(currentFraction);
+        for (Record record : dataset) {
+            String key = record.attributes[attributeIndex];
+            subsets.putIfAbsent(key, new ArrayList<>());
+            subsets.get(key).add(record);
         }
 
-        System.out.println("Child Entropy = " + childEntropy);
-        return childEntropy;
-    }
-
-    public double calculateAverageChildrenEntropy(ArrayList<double[]> fractionEntropyPairs) {
-        double averageEntropy = 0;
-
-        // Loop through each set of pairs in the ArrayList
-        for (double[] currentPair : fractionEntropyPairs) {
-            double currentFraction = currentPair[0];
-            double currentEntropy = currentPair[1];
-
-            // Calculate weighted average entropy by multiplying each fraction by its entropy, and sum the results
-            averageEntropy += currentFraction * currentEntropy;
+        double weightedEntropy = 0.0;
+        for (List<Record> subset : subsets.values()) {
+            weightedEntropy += ((double) subset.size() / dataset.size()) * calculateEntropy(subset);
         }
 
-        System.out.println("Average Children Entropy = " + averageEntropy);
-        return averageEntropy;
+        System.out.println("Result across the current split:");
+
+        System.out.println("  Weighted Entropy: " + weightedEntropy);
+        return totalEntropy - weightedEntropy;
     }
 
-    public Subset getHighestInformationGain(ArrayList<Subset> subsets) {
-
-
-        Subset highestSubset = subsets.get(0);
-        System.out.println("ARR  " + subsets);
-//        double highestInformationGain = highestSubset.getInformationGain();
-//        for (Subset currentSubset : subsets) {
-//            if (currentSubset.getInformationGain() > highestInformationGain) {
-//                highestInformationGain = currentSubset.getInformationGain();
-//            }
-//        }
-
-//        System.out.println("Highest Information Gain = " + highestInformationGain);
-        // Return the entropy of the subset with the highest information gain, so it can become the next parent entropy
-        return highestSubset;
-    }
-
-    public HashSet<String> getUniqueAttributeValues(int attributeIndex) {
-        HashSet<String> attributeValues = new HashSet<>();
-
-        // Loop through all rows in the dataset
-        for (String[] currentData : data) {
-            attributeValues.add(currentData[attributeIndex]);
-        }
-
-        return attributeValues;
-    }
-
-    public double calculateSubsetEntropy(ArrayList<String[]> subsetData) {
-        // Store the index of the attribute to split on
-        int booleanIndex = attributesIndices.size() - 1;
-        int yesValueCount = 0;
-        int noValueCount = 0;
-        double totalValues = subsetData.size();
-
-        // Loop through all data to count yes and no occurrences
-        for (String[] currentData : subsetData) {
-            String booleanValue = currentData[booleanIndex];
-            if (booleanValue.equalsIgnoreCase("yes")) {
-                yesValueCount++;
-            } else {
-                noValueCount++;
-            }
-        }
-
-        double yesFraction = yesValueCount / totalValues;
-        double noFraction = noValueCount / totalValues;
-
-        System.out.println(" Instances: " + totalValues + "\n # Positive datasets ((A+) grade in programming) = " +
-                yesValueCount + "\n # Negative datasets (No (A+) grade in programming) = " + noValueCount);
-        System.out.println(" Yes fraction = " + yesValueCount + "/" + totalValues);
-        System.out.println(" No fraction = " + noValueCount + "/" + totalValues);
-
-        ArrayList<Double> recordFractions = new ArrayList<>();
-        recordFractions.add(yesFraction);
-        recordFractions.add(noFraction);
-        return calculateTotalChildEntropy(recordFractions);
-    }
-
-    public HashMap<String, ArrayList<String[]>> splitAttributeData(ArrayList<String[]> data, int attributeIndex) {
-        // Stores pairs of: attribute name, all data values for that attribute
-        HashMap<String, ArrayList<String[]>> splitData = new HashMap<>();
-
-        // Loop through all rows in the dataset
-        for (String[] currentData : data) {
-            // Get the value of the attribute to split on
-            String attributeValue = currentData[attributeIndex];
-
-            // If the value doesn't exist in the map, create a new list for it
-            if (!splitData.containsKey(attributeValue)) {
-                splitData.put(attributeValue, new ArrayList<>());
-            }
-
-            // Add the current row to the appropriate list
-            splitData.get(attributeValue).add(currentData);
-        }
-
-        return splitData;
-    }
-
-    public void calculateAllSubsetsEntropy(HashMap<String, ArrayList<String[]>> subsets, double parentEntropy) {
-        for (String attributeValue : subsets.keySet()) {
-            ArrayList<String[]> subset = subsets.get(attributeValue);
-
-            // Calculate entropy for this subset
-            double subsetEntropy = calculateSubsetEntropy(subset);
-
-            // Calculate information gain: Information Gain = entropy(parent) – [average entropy(children)]
-            double informationGain = parentEntropy - subsetEntropy;
-
-            // Print the subset values along with its entropy and information gain
-            System.out.println("SUBSET for attribute value: " + attributeValue);
-            for (String[] arrayValue: subset) {
-                for (String value: arrayValue) {
-                    System.out.print(value + " ");
+    // Find the attribute with the highest information gain
+    public static int bestAttributeToSplit(List<Record> dataset, Set<Integer> usedAttributes) {
+        double maxGain = -1;
+        int bestAttribute = -1;
+        for (int i = 0; i < dataset.get(0).attributes.length; i++) {
+            if (!usedAttributes.contains(i)) {
+                double gain = calculateInformationGain(dataset, i);
+                System.out.println("  Information Gain: " + gain);
+                if (gain > maxGain) {
+                    maxGain = gain;
+                    bestAttribute = i;
                 }
-                System.out.println();
-            }
-            System.out.println("Entropy: " + subsetEntropy);
-            System.out.println("Information Gain: " + informationGain);
-            System.out.println();
-        }
-    }
-
-    public double calculateParentEntropy() {
-        System.out.println("Entropy of the whole dataset:");
-
-        double parentEntropy = calculateSubsetEntropy(data);
-        System.out.println("Dataset Entropy: " + parentEntropy);
-
-        ArrayList<Subset> parentEntropyOptions = new ArrayList<>(); // Don't modify yet
-        ArrayList<Subsets> entropiesOptions = new ArrayList<Subsets>();
-
-        for (int attributeIndex = 0; attributeIndex < attributesIndices.size() - 1; attributeIndex++) {
-            System.out.println("**************************************************");
-            String attribute = attributesIndices.get(attributeIndex);
-            System.out.println("\nCalculating the entropy for " + attribute);
-            HashMap<String, ArrayList<String[]>> subsets = splitAttributeData(data, attributeIndex);
-            Subsets subsetsCollection = new Subsets();
-
-            for (String attributeValue : subsets.keySet()) {
-                System.out.println(" " + attributeValue + ":");
-                ArrayList<String[]> subset = subsets.get(attributeValue);
-                double subsetEntropy = calculateSubsetEntropy(subset);
-                Subset currentSubset = new Subset(subset.size(), attribute, attributeValue, subsetEntropy, parentEntropy);
-//                double informationGain = parentEntropy - subsetEntropy; WRONG
-                System.out.println();
-                subsetsCollection.addSubset(currentSubset);
-            }
-
-            subsetsCollection.calculateAverageEntropies();
-            subsetsCollection.setParentEntropy(parentEntropy);
-            entropiesOptions.add(subsetsCollection);
-        }
-        Subsets splitWithHighestInfoGain = findSubsetsOfHighestInfoGain(entropiesOptions);
-        Subset nextParentSubset = getHighestInformationGain(parentEntropyOptions);
-        return nextParentSubset.getEntropy();
-    }
-
-
-    public Subsets findSubsetsOfHighestInfoGain(List<Subsets> listSubsets) {
-        Subsets pickedSubsets = null;
-        double highestInfoGain = 0.0;
-        for (Subsets subsets : listSubsets) {
-            if (subsets.getInformationGain() > highestInfoGain) {
-                highestInfoGain = subsets.getInformationGain();
-                pickedSubsets = subsets;
             }
         }
-        System.out.println("\n\n**************************************************");
-        System.out.println("Highest Information Gain: " + highestInfoGain);
-        return pickedSubsets;
+
+        System.out.println("\nHighest Information Gain is: " + maxGain);
+        System.out.println("The best choice to split is " + bestAttribute);
+        return bestAttribute;
     }
 
 
-    /**
-     * Runs the ID3 algorithm, starting with receiving its current parent entropy
-     */
-    public void runID3() {
-        double parentEntropy = calculateParentEntropy();
-        int numAttributes = data.get(0).length;
-        for (int index = 0; index < numAttributes; index++) {
-            HashMap<String, ArrayList<String[]>> currentAttributeData = splitAttributeData(data, index);
-            calculateAllSubsetsEntropy(currentAttributeData, parentEntropy);
+
+    static class DecisionNode {
+        String label;
+        String attribute;
+        Map<String, DecisionNode> children = new HashMap<>();
+
+        public DecisionNode(String label) {
+            this.label = label;
+        }
+
+        public DecisionNode(String attribute, Map<String, DecisionNode> children) {
+            this.attribute = attribute;
+            this.children = children;
         }
     }
 
+    // Recursive function to build the decision tree
+    public static DecisionNode buildDecisionTree(List<Record> dataset, Set<Integer> usedAttributes, List<String> attributes) {
+        if (allSameLabel(dataset)) {
+            return new DecisionNode(dataset.get(0).label); // Leaf node
+        }
 
-    public static void main(String[] args) {
+        if (usedAttributes.size() == dataset.get(0).attributes.length) {
+            return new DecisionNode(majorityLabel(dataset)); // No attributes left
+        }
 
+        int bestAttr = bestAttributeToSplit(dataset, usedAttributes);
+        usedAttributes.add(bestAttr);
+
+        Map<String, List<Record>> subsets = splitDatasetByAttribute(dataset, bestAttr);
+        Map<String, DecisionNode> children = new HashMap<>();
+
+        for (Map.Entry<String, List<Record>> entry : subsets.entrySet()) {
+            children.put(entry.getKey(), buildDecisionTree(entry.getValue(), new HashSet<>(usedAttributes), attributes));
+        }
+
+        return new DecisionNode(attributes.get(bestAttr), children);
+    }
+
+    // Helper methods to check labels
+    public static boolean allSameLabel(List<Record> dataset) {
+        String firstLabel = dataset.get(0).label;
+        for (Record record : dataset) {
+            if (!record.label.equals(firstLabel)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static String majorityLabel(List<Record> dataset) {
+        Map<String, Integer> labelCounts = new HashMap<>();
+        for (Record record : dataset) {
+            labelCounts.put(record.label, labelCounts.getOrDefault(record.label, 0) + 1);
+        }
+        return Collections.max(labelCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
+    }
+
+    public static Map<String, List<Record>> splitDatasetByAttribute(List<Record> dataset, int attributeIndex) {
+        Map<String, List<Record>> subsets = new HashMap<>();
+        for (Record record : dataset) {
+            String key = record.attributes[attributeIndex];
+            subsets.putIfAbsent(key, new ArrayList<>());
+            subsets.get(key).add(record);
+        }
+        return subsets;
+    }
+
+    public static List<String> getAllAttributes(List<Record> dataset) {
+        return Arrays.asList("Math", "Statistics", "Science", "English");
+    }
+
+
+    // Print the decision tree recursively
+    public static void printTree(DecisionNode node, String indent) {
+        if (node.children.isEmpty()) {
+            System.out.println(indent + "-> " + node.label);
+        } else {
+            System.out.println(indent + "[Attribute: " + node.attribute + "]");
+            for (Map.Entry<String, DecisionNode> child : node.children.entrySet()) {
+                System.out.println(indent + "--> " + child.getKey());
+                printTree(child.getValue(), indent + "  ");
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
         try {
-            String filename = args[0];
-            DecisionTree decisionTree = new DecisionTree(filename);
-            decisionTree.runID3();
+            String file = args[0];
+            List<Record> dataset = readCSV(file);  // Adjust your path to the CSV file
+            System.out.println(dataset);
+            DecisionNode tree = buildDecisionTree(dataset, new HashSet<>(), getAllAttributes(dataset));
+            printTree(tree, "  ");
         } catch (Exception e) {
-            System.out.println("Please enter a valid .csv file for the Decision Tree\n" + e.getMessage());
+            System.out.println(e.getMessage());
         }
 
     }
+
 }
