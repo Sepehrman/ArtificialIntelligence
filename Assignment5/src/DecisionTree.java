@@ -22,11 +22,17 @@ public class DecisionTree {
         }
     }
 
-    public static List<Record> readCSV(String filename) throws IOException {
+    public static List<Record> readCSV(String filename, List<String> attributes) throws IOException {
         List<Record> dataset = new ArrayList<>();
         BufferedReader br = new BufferedReader(new FileReader(filename));
-        String line;
-        br.readLine(); // Skip the header
+
+        // Reading the header to get attribute names
+        String line = br.readLine();
+        if (line != null) {
+            String[] headers = line.split(",");
+            attributes.addAll(Arrays.asList(headers).subList(0, headers.length - 1)); // Skip the label column
+        }
+
         while ((line = br.readLine()) != null) {
             String[] values = line.split(",");
             dataset.add(new Record(Arrays.copyOf(values, values.length - 1), values[values.length - 1]));
@@ -59,11 +65,11 @@ public class DecisionTree {
         return entropy;
     }
 
-    // Information Gain calculation
-    public static double calculateInformationGain(List<Record> dataset, int attributeIndex) {
+    public static double calculateInformationGain(List<Record> dataset, int attributeIndex, String attributeName) {
+        System.out.println("Calculating entropy for attribute: " + attributeName);
+
         double totalEntropy = calculateEntropy(dataset);
         Map<String, List<Record>> subsets = new HashMap<>();
-
 
         for (Record record : dataset) {
             String key = record.attributes[attributeIndex];
@@ -72,24 +78,27 @@ public class DecisionTree {
         }
 
         double weightedEntropy = 0.0;
-        for (List<Record> subset : subsets.values()) {
+        for (Map.Entry<String, List<Record>> entry : subsets.entrySet()) {
+            String subsetValue = entry.getKey();
+            List<Record> subset = entry.getValue();
+
+            System.out.println("Subset '" + subsetValue + "'");
             weightedEntropy += ((double) subset.size() / dataset.size()) * calculateEntropy(subset);
         }
 
-        System.out.println("Result across the current split:");
-
+        System.out.println("=======================================");
         System.out.println("  Weighted Entropy: " + weightedEntropy);
         return totalEntropy - weightedEntropy;
     }
 
-    // Find the attribute with the highest information gain
-    public static int bestAttributeToSplit(List<Record> dataset, Set<Integer> usedAttributes) {
+    public static int bestAttributeToSplit(List<Record> dataset, Set<Integer> usedAttributes, List<String> attributes) {
         double maxGain = -1;
         int bestAttribute = -1;
         for (int i = 0; i < dataset.get(0).attributes.length; i++) {
             if (!usedAttributes.contains(i)) {
-                double gain = calculateInformationGain(dataset, i);
-                System.out.println("  Information Gain: " + gain);
+                double gain = calculateInformationGain(dataset, i, attributes.get(i));
+                System.out.println("  Information Gain: " + gain + "\n" +
+                        "=======================================");
                 if (gain > maxGain) {
                     maxGain = gain;
                     bestAttribute = i;
@@ -98,7 +107,7 @@ public class DecisionTree {
         }
 
         System.out.println("\nHighest Information Gain is: " + maxGain);
-        System.out.println("The best choice to split is " + bestAttribute);
+        System.out.println("The best choice to split is " + attributes.get(bestAttribute));
         return bestAttribute;
     }
 
@@ -119,7 +128,6 @@ public class DecisionTree {
         }
     }
 
-    // Recursive function to build the decision tree
     public static DecisionNode buildDecisionTree(List<Record> dataset, Set<Integer> usedAttributes, List<String> attributes) {
         if (allSameLabel(dataset)) {
             return new DecisionNode(dataset.get(0).label); // Leaf node
@@ -129,7 +137,7 @@ public class DecisionTree {
             return new DecisionNode(majorityLabel(dataset)); // No attributes left
         }
 
-        int bestAttr = bestAttributeToSplit(dataset, usedAttributes);
+        int bestAttr = bestAttributeToSplit(dataset, usedAttributes, attributes);
         usedAttributes.add(bestAttr);
 
         Map<String, List<Record>> subsets = splitDatasetByAttribute(dataset, bestAttr);
@@ -171,11 +179,6 @@ public class DecisionTree {
         return subsets;
     }
 
-    public static List<String> getAllAttributes(List<Record> dataset) {
-        return Arrays.asList("Math", "Statistics", "Science", "English");
-    }
-
-
     // Print the decision tree recursively
     public static void printTree(DecisionNode node, String indent) {
         if (node.children.isEmpty()) {
@@ -192,14 +195,15 @@ public class DecisionTree {
     public static void main(String[] args) throws IOException {
         try {
             String file = args[0];
-            List<Record> dataset = readCSV(file);  // Adjust your path to the CSV file
+            List<String> attributes = new ArrayList<>();
+            List<Record> dataset = readCSV(file, attributes);  // Read file and header labels
             System.out.println(dataset);
-            DecisionNode tree = buildDecisionTree(dataset, new HashSet<>(), getAllAttributes(dataset));
+
+            DecisionNode tree = buildDecisionTree(dataset, new HashSet<>(), attributes);
             printTree(tree, "  ");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
     }
 
 }
