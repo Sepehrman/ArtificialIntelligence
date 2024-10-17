@@ -1,5 +1,11 @@
 import java.io.*;
 import java.util.*;
+/**
+ * @author Sepehr Mansouri
+ * Artificial Intelligence - Assignment 5
+ * The purpose of this assignment was to develop an ID3 Decision Tree by reading through a .csv file and
+ * reading through subsets of data and making relevant decisions based
+ */
 
 public class DecisionTree {
 
@@ -22,6 +28,13 @@ public class DecisionTree {
         }
     }
 
+    /**
+     * Reads the CSV file, extracts attributes and records.
+     * @param filename the path of the CSV file to read.
+     * @param attributes a list to hold the attribute names.
+     * @return a list of records from the CSV file.
+     * @throws IOException if there is an issue reading the file.
+     */
     public static List<Record> readCSV(String filename, List<String> attributes) throws IOException {
         List<Record> dataset = new ArrayList<>();
         BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -41,8 +54,11 @@ public class DecisionTree {
         return dataset;
     }
 
-
-    // Entropy calculation
+    /**
+     * Calculates the entropy of the given dataset.
+     * @param dataset the dataset for which entropy is calculated.
+     * @return the calculated entropy value.
+     */
     public static double calculateEntropy(List<Record> dataset) {
         Map<String, Integer> labelCounts = new HashMap<>();
         for (Record record : dataset) {
@@ -65,6 +81,13 @@ public class DecisionTree {
         return entropy;
     }
 
+    /**
+     * Calculates the information gain for a specific attribute in the dataset.
+     * @param dataset the dataset used for information gain calculation.
+     * @param attributeIndex the index of the attribute being evaluated.
+     * @param attributeName the name of the attribute.
+     * @return the calculated information gain for the given attribute.
+     */
     public static double calculateInformationGain(List<Record> dataset, int attributeIndex, String attributeName) {
         System.out.println("\nCalculating entropies for attribute: " + attributeName);
 
@@ -91,6 +114,13 @@ public class DecisionTree {
         return totalEntropy - weightedEntropy;
     }
 
+    /**
+     * Determines the best attribute to split the dataset.
+     * @param dataset the dataset to be split.
+     * @param usedAttributes the set of attributes that have already been used.
+     * @param attributes the list of all attributes.
+     * @return the index of the best attribute to split on.
+     */
     public static int bestAttributeToSplit(List<Record> dataset, Set<Integer> usedAttributes, List<String> attributes) {
         double maxGain = -1;
         int bestAttribute = -1;
@@ -111,8 +141,6 @@ public class DecisionTree {
         return bestAttribute;
     }
 
-
-
     static class DecisionNode {
         String label;
         String attribute;
@@ -128,6 +156,14 @@ public class DecisionTree {
         }
     }
 
+    /**
+     * Builds the decision tree recursively.
+     *
+     * @param dataset the dataset used to build the tree.
+     * @param usedAttributes the set of attributes that have already been used.
+     * @param attributes the list of all attributes.
+     * @return the root node of the decision tree.
+     */
     public static DecisionNode buildDecisionTree(List<Record> dataset, Set<Integer> usedAttributes, List<String> attributes) {
         if (allSameLabel(dataset)) {
             return new DecisionNode(dataset.get(0).label); // Leaf node
@@ -150,7 +186,11 @@ public class DecisionTree {
         return new DecisionNode(attributes.get(bestAttr), children);
     }
 
-    // Helper methods to check labels
+    /**
+     * Checks if all records in the dataset have the same label.
+     * @param dataset the dataset to be checked
+     * @return true if all records have the same label, false otherwise
+     */
     public static boolean allSameLabel(List<Record> dataset) {
         String firstLabel = dataset.get(0).label;
         for (Record record : dataset) {
@@ -161,6 +201,11 @@ public class DecisionTree {
         return true;
     }
 
+    /**
+     * Finds the majority label in the dataset.
+     * @param dataset the dataset to find the majority label from
+     * @return the label that occurs most frequently in the dataset
+     */
     public static String majorityLabel(List<Record> dataset) {
         Map<String, Integer> labelCounts = new HashMap<>();
         for (Record record : dataset) {
@@ -169,6 +214,12 @@ public class DecisionTree {
         return Collections.max(labelCounts.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 
+    /**
+     * Splits the dataset by the given attribute index.
+     * @param dataset the dataset to be split
+     * @param attributeIndex the index of the attribute to split by
+     * @return a map where the keys are attribute values and the values are subsets of the dataset
+     */
     public static Map<String, List<Record>> splitDatasetByAttribute(List<Record> dataset, int attributeIndex) {
         Map<String, List<Record>> subsets = new HashMap<>();
         for (Record record : dataset) {
@@ -179,7 +230,12 @@ public class DecisionTree {
         return subsets;
     }
 
-    // Print the decision tree recursively
+
+    /**
+     * Prints the decision tree recursively.
+     * @param node the root node of the tree.
+     * @param indent the string used to indent each level of the tree.
+     */
     public static void printTree(DecisionNode node, String indent) {
         if (node.children.isEmpty()) {
             System.out.println(indent + "-> " + node.label);
@@ -192,6 +248,11 @@ public class DecisionTree {
         }
     }
 
+    /**
+     * Main method to execute the decision tree process.
+     * @param args command line arguments (expects the first argument to be the filename of the dataset).
+     * @throws IOException if there is an issue with file reading.
+     */
     public static void main(String[] args) throws IOException {
         try {
             String file = args[0];
