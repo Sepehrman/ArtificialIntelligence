@@ -255,6 +255,10 @@ public class DecisionTree {
      */
     public static void main(String[] args) throws IOException {
         try {
+            if (args.length != 1) {
+                System.out.println("You must include a .csv file to read from.");
+                return;
+            }
             String file = args[0];
             List<String> attributes = new ArrayList<>();
             List<Record> dataset = readCSV(file, attributes);  // Read file and header labels
